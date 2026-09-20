@@ -1,0 +1,6 @@
+{
+  "name": "CivicPulse AI",
+  "description": "From Citizen Voice to Government Action — CivicPulse AI is a civic feedback analysis and decision intelligence prototype.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

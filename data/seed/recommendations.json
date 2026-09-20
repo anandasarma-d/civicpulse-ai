@@ -1,0 +1,30 @@
+[
+  {
+    "recommendation_id": "REC-001",
+    "gap_id": "GAP-001",
+    "rank": 1,
+    "intervention": "Deploy emergency mobile water supply tankers and accelerate feeder valve overhauls",
+    "why_now": "Citizen complaints have escalated 40% over the last 10 days with dry taps reported across 4 sub-wards.",
+    "why_here": "Ward 150 Bellandur shows lowest pipeline pressure resilience and zero active capital investments.",
+    "expected_benefit": "Immediate relief to approximately 42,000 residents within 48 hours of deployment.",
+    "caveats": [
+      "Tanker route accessibility may be constrained during peak traffic hours."
+    ],
+    "evidence_refs": [
+      "CLU-001",
+      "FAC-BLR-001",
+      "REQ-KA-0001",
+      "REQ-KA-0009"
+    ],
+    "score_breakdown": {
+      "demand": 82.5,
+      "infra_gap": 78,
+      "urgency": 85,
+      "investment_gap": 90
+    },
+    "model_name": "gemini-1.5-flash",
+    "prompt_version": "v1.0",
+    "generated_at": "2024-03-20T15:05:00Z",
+    "status": "DRAFT"
+  }
+]

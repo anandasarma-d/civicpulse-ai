@@ -1,0 +1,18 @@
+[
+  {
+    "event_id": "AUD-001",
+    "actor": "system_ingest",
+    "action": "SEED_INIT",
+    "entity_type": "SYSTEM",
+    "entity_id": "SYS-INIT",
+    "references": [
+      "REQ-KA-0001",
+      "CLU-001"
+    ],
+    "timestamp": "2024-03-20T16:00:00Z",
+    "metadata": {
+      "environment": "local-smoke",
+      "stage": "RICE-03"
+    }
+  }
+]

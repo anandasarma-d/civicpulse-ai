@@ -1,0 +1,20 @@
+[
+  {
+    "media_id": "MED-001",
+    "request_id": "REQ-KA-0001",
+    "media_type": "PHOTO",
+    "storage_uri": "gs://civicpulse-bucket/photos/REQ-KA-0001.jpg",
+    "analysis_summary": "Visual evidence of leaking pipeline valve with pooling water on footpath.",
+    "observations": {
+      "pipe_visible": true,
+      "water_leak": true,
+      "road_hazard": false
+    },
+    "analysis_confidence": {
+      "visual_detection": 0.92
+    },
+    "model_version": "gemini-1.5-flash",
+    "created_at": "2024-03-04T07:13:00Z",
+    "synthetic_flag": true
+  }
+]

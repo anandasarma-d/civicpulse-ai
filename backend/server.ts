@@ -1,7 +1,11 @@
 import app from './app';
+import config from './common/config';
+import { notFoundHandler, errorHandler } from './api/middleware/errorHandler';
 
-const PORT = Number(process.env.BACKEND_PORT || process.env.PORT || 8080);
+// For standalone backend runs, catch any remaining unhandled non-API paths with notFoundHandler
+app.use(notFoundHandler);
+app.use(errorHandler);
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`CivicPulse AI Backend running on port ${PORT}`);
+app.listen(config.PORT, '0.0.0.0', () => {
+  console.log(`CivicPulse AI Backend running on port ${config.PORT}`);
 });

@@ -1,0 +1,86 @@
+[
+  {
+    "facility_id": "FAC-BLR-001",
+    "geo_id": "GEO-LOC-BLR-01",
+    "category_id": "WATER",
+    "name": "Bellandur Water Booster Pumping Station",
+    "latitude": 12.9321,
+    "longitude": 77.6752,
+    "capacity": 45000,
+    "operational_status": "LIMITED",
+    "coverage_area": "Bellandur North & Central",
+    "synthetic_flag": true
+  },
+  {
+    "facility_id": "FAC-BLR-002",
+    "geo_id": "GEO-LOC-BLR-02",
+    "category_id": "WATER",
+    "name": "HSR Sector 2 Distribution Reservoir",
+    "latitude": 12.9155,
+    "longitude": 77.6489,
+    "capacity": 60000,
+    "operational_status": "OPERATIONAL",
+    "coverage_area": "HSR Sectors 1-4",
+    "synthetic_flag": true
+  },
+  {
+    "facility_id": "FAC-BLR-003",
+    "geo_id": "GEO-LOC-BLR-03",
+    "category_id": "DRAINAGE",
+    "name": "Varthur Lake Sluice & Outflow Regulator",
+    "latitude": 12.9412,
+    "longitude": 77.7423,
+    "capacity": 80000,
+    "operational_status": "LIMITED",
+    "coverage_area": "Varthur Basin",
+    "synthetic_flag": true
+  },
+  {
+    "facility_id": "FAC-BLR-004",
+    "geo_id": "GEO-LOC-BLR-05",
+    "category_id": "HEALTH_ACCESS",
+    "name": "Domlur Urban Primary Health Centre",
+    "latitude": 12.9625,
+    "longitude": 77.6354,
+    "capacity": 250,
+    "operational_status": "OPERATIONAL",
+    "coverage_area": "Domlur and Indiranagar South",
+    "synthetic_flag": true
+  },
+  {
+    "facility_id": "FAC-MYS-001",
+    "geo_id": "GEO-LOC-MYS-01",
+    "category_id": "WATER",
+    "name": "Chamundipuram Elevated Water Reservoir",
+    "latitude": 12.2895,
+    "longitude": 76.6589,
+    "capacity": 30000,
+    "operational_status": "OPERATIONAL",
+    "coverage_area": "Chamundipuram & Agrahara",
+    "synthetic_flag": true
+  },
+  {
+    "facility_id": "FAC-MYS-002",
+    "geo_id": "GEO-LOC-MYS-03",
+    "category_id": "HEALTH_ACCESS",
+    "name": "Saraswathipuram Community Health Facility",
+    "latitude": 12.3045,
+    "longitude": 76.6322,
+    "capacity": 180,
+    "operational_status": "OPERATIONAL",
+    "coverage_area": "Saraswathipuram & Tonachikoppal",
+    "synthetic_flag": true
+  },
+  {
+    "facility_id": "FAC-MYS-003",
+    "geo_id": "GEO-LOC-MYS-05",
+    "category_id": "WATER",
+    "name": "Hebbal Industrial Sub-division Water Works",
+    "latitude": 12.3598,
+    "longitude": 76.6111,
+    "capacity": 35000,
+    "operational_status": "LIMITED",
+    "coverage_area": "Hebbal Industrial Area",
+    "synthetic_flag": true
+  }
+]

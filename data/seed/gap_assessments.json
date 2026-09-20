@@ -1,0 +1,34 @@
+[
+  {
+    "gap_id": "GAP-001",
+    "geo_id": "GEO-LOC-BLR-01",
+    "category_id": "WATER",
+    "cluster_id": "CLU-001",
+    "citizen_demand": 82.5,
+    "population_affected": 42000,
+    "infrastructure_gap": 78,
+    "urgency_severity": 85,
+    "investment_gap": 90,
+    "equity_need": 68,
+    "priority_score": 81.2,
+    "rank": 1,
+    "calculated_at": "2024-03-20T15:00:00Z",
+    "calculation_version": "v1.0.0-smoke"
+  },
+  {
+    "gap_id": "GAP-002",
+    "geo_id": "GEO-LOC-BLR-02",
+    "category_id": "ROADS",
+    "cluster_id": "CLU-002",
+    "citizen_demand": 65,
+    "population_affected": 35000,
+    "infrastructure_gap": 45,
+    "urgency_severity": 60,
+    "investment_gap": 25,
+    "equity_need": 40,
+    "priority_score": 48.5,
+    "rank": 2,
+    "calculated_at": "2024-03-21T12:00:00Z",
+    "calculation_version": "v1.0.0-smoke"
+  }
+]

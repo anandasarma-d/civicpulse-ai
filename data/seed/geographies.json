@@ -1,0 +1,137 @@
+[
+  {
+    "geo_id": "GEO-ST-KA",
+    "level": "STATE",
+    "parent_geo_id": null,
+    "code": "KA",
+    "name": "Karnataka",
+    "latitude": 12.9716,
+    "longitude": 77.5946
+  },
+  {
+    "geo_id": "GEO-DIS-BLRU",
+    "level": "DISTRICT",
+    "parent_geo_id": "GEO-ST-KA",
+    "code": "BLRU",
+    "name": "Bengaluru Urban",
+    "latitude": 12.9716,
+    "longitude": 77.5946
+  },
+  {
+    "geo_id": "GEO-DIS-MYS",
+    "level": "DISTRICT",
+    "parent_geo_id": "GEO-ST-KA",
+    "code": "MYS",
+    "name": "Mysuru",
+    "latitude": 12.2958,
+    "longitude": 76.6394
+  },
+  {
+    "geo_id": "GEO-LOC-BLR-01",
+    "level": "LOCAL_UNIT",
+    "parent_geo_id": "GEO-DIS-BLRU",
+    "code": "W150",
+    "name": "Ward 150 - Bellandur",
+    "latitude": 12.9304,
+    "longitude": 77.6784
+  },
+  {
+    "geo_id": "GEO-LOC-BLR-02",
+    "level": "LOCAL_UNIT",
+    "parent_geo_id": "GEO-DIS-BLRU",
+    "code": "W174",
+    "name": "Ward 174 - HSR Layout",
+    "latitude": 12.9121,
+    "longitude": 77.6446
+  },
+  {
+    "geo_id": "GEO-LOC-BLR-03",
+    "level": "LOCAL_UNIT",
+    "parent_geo_id": "GEO-DIS-BLRU",
+    "code": "W149",
+    "name": "Ward 149 - Varthur",
+    "latitude": 12.9398,
+    "longitude": 77.7471
+  },
+  {
+    "geo_id": "GEO-LOC-BLR-04",
+    "level": "LOCAL_UNIT",
+    "parent_geo_id": "GEO-DIS-BLRU",
+    "code": "W085",
+    "name": "Ward 85 - Doddanekkundi",
+    "latitude": 12.9719,
+    "longitude": 77.7011
+  },
+  {
+    "geo_id": "GEO-LOC-BLR-05",
+    "level": "LOCAL_UNIT",
+    "parent_geo_id": "GEO-DIS-BLRU",
+    "code": "W112",
+    "name": "Ward 112 - Domlur",
+    "latitude": 12.9609,
+    "longitude": 77.6387
+  },
+  {
+    "geo_id": "GEO-LOC-BLR-06",
+    "level": "LOCAL_UNIT",
+    "parent_geo_id": "GEO-DIS-BLRU",
+    "code": "W160",
+    "name": "Ward 160 - Rajarajeshwari Nagar",
+    "latitude": 12.9255,
+    "longitude": 77.5186
+  },
+  {
+    "geo_id": "GEO-LOC-MYS-01",
+    "level": "LOCAL_UNIT",
+    "parent_geo_id": "GEO-DIS-MYS",
+    "code": "W012",
+    "name": "Ward 12 - Chamundipuram",
+    "latitude": 12.2882,
+    "longitude": 76.6572
+  },
+  {
+    "geo_id": "GEO-LOC-MYS-02",
+    "level": "LOCAL_UNIT",
+    "parent_geo_id": "GEO-DIS-MYS",
+    "code": "W018",
+    "name": "Ward 18 - Kuvempunagar",
+    "latitude": 12.2845,
+    "longitude": 76.6261
+  },
+  {
+    "geo_id": "GEO-LOC-MYS-03",
+    "level": "LOCAL_UNIT",
+    "parent_geo_id": "GEO-DIS-MYS",
+    "code": "W025",
+    "name": "Ward 25 - Saraswathipuram",
+    "latitude": 12.3021,
+    "longitude": 76.6341
+  },
+  {
+    "geo_id": "GEO-LOC-MYS-04",
+    "level": "LOCAL_UNIT",
+    "parent_geo_id": "GEO-DIS-MYS",
+    "code": "W031",
+    "name": "Ward 31 - Gokulam",
+    "latitude": 12.3275,
+    "longitude": 76.6268
+  },
+  {
+    "geo_id": "GEO-LOC-MYS-05",
+    "level": "LOCAL_UNIT",
+    "parent_geo_id": "GEO-DIS-MYS",
+    "code": "W042",
+    "name": "Ward 42 - Hebbal",
+    "latitude": 12.3582,
+    "longitude": 76.6125
+  },
+  {
+    "geo_id": "GEO-LOC-MYS-06",
+    "level": "LOCAL_UNIT",
+    "parent_geo_id": "GEO-DIS-MYS",
+    "code": "W055",
+    "name": "Ward 55 - Jayalakshmipuram",
+    "latitude": 12.3198,
+    "longitude": 76.6291
+  }
+]

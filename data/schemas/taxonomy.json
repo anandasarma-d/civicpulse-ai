@@ -1,0 +1,78 @@
+{
+  "categories": [
+    {
+      "category_id": "WATER",
+      "name": "Water Supply & Quality",
+      "priority_tier": "P0",
+      "issue_types": [
+        { "issue_type_id": "DRINKING_WATER_SHORTAGE", "name": "Drinking Water Shortage" },
+        { "issue_type_id": "PIPELINE_FAILURE", "name": "Pipeline Failure / Leakage" },
+        { "issue_type_id": "SUPPLY_INTERRUPTION", "name": "Supply Interruption" }
+      ]
+    },
+    {
+      "category_id": "ROADS",
+      "name": "Roads & Transit Infrastructure",
+      "priority_tier": "P0",
+      "issue_types": [
+        { "issue_type_id": "POTHOLE", "name": "Pothole" },
+        { "issue_type_id": "ROAD_DAMAGE", "name": "Road Damage / Deterioration" },
+        { "issue_type_id": "CONNECTIVITY_GAP", "name": "Connectivity Gap" }
+      ]
+    },
+    {
+      "category_id": "DRAINAGE",
+      "name": "Drainage & Flood Management",
+      "priority_tier": "P0",
+      "issue_types": [
+        { "issue_type_id": "BLOCKED_DRAIN", "name": "Blocked Drain" },
+        { "issue_type_id": "LOCAL_FLOODING", "name": "Local Flooding / Waterlogging" }
+      ]
+    },
+    {
+      "category_id": "HEALTH_ACCESS",
+      "name": "Healthcare Access & Facilities",
+      "priority_tier": "P0",
+      "issue_types": [
+        { "issue_type_id": "FACILITY_ACCESS", "name": "Facility Access Barrier" },
+        { "issue_type_id": "CAPACITY_GAP", "name": "Healthcare Capacity Gap" }
+      ]
+    },
+    {
+      "category_id": "EDUCATION",
+      "name": "Education Infrastructure",
+      "priority_tier": "P1",
+      "issue_types": [
+        { "issue_type_id": "SCHOOL_CAPACITY", "name": "School Capacity Limitation" },
+        { "issue_type_id": "FACILITY_GAP", "name": "School Facility Gap" }
+      ]
+    },
+    {
+      "category_id": "SANITATION",
+      "name": "Sanitation & Waste",
+      "priority_tier": "P1",
+      "issue_types": [
+        { "issue_type_id": "WASTE_COLLECTION", "name": "Waste Collection Irregularity" },
+        { "issue_type_id": "PUBLIC_SANITATION", "name": "Public Sanitation Facility Defect" }
+      ]
+    },
+    {
+      "category_id": "ELECTRICITY",
+      "name": "Electricity & Lighting",
+      "priority_tier": "P1",
+      "issue_types": [
+        { "issue_type_id": "STREET_LIGHTING", "name": "Street Lighting Failure" },
+        { "issue_type_id": "LOCAL_RELIABILITY", "name": "Local Grid Reliability" }
+      ]
+    },
+    {
+      "category_id": "CONNECTIVITY",
+      "name": "Digital Connectivity",
+      "priority_tier": "P1",
+      "issue_types": [
+        { "issue_type_id": "INTERNET_ACCESS", "name": "Internet Access Deficit" },
+        { "issue_type_id": "DIGITAL_ACCESS_GAP", "name": "Digital Access Gap" }
+      ]
+    }
+  ]
+}

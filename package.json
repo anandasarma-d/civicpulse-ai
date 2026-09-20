@@ -11,7 +11,9 @@
     "dev:backend": "tsx backend/server.ts",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "validate:data": "tsx scripts/validateDataIntegrity.ts",
+    "test": "tsx tests/unit/dataIntegrity.test.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

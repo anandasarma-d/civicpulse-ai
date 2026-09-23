@@ -1,7 +1,11 @@
-import React from 'react';
-import { Activity, Layers, ShieldAlert, Cpu, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShieldAlert, Cpu, Sparkles, MessageSquare, Layers } from 'lucide-react';
+import CitizenFlow from '../components/CitizenFlow';
+import ClusterDetailView from '../components/ClusterDetailView';
 
 export const LandingPage: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'CITIZEN_FLOW' | 'CLUSTER_DETAIL' | 'SYSTEM_OVERVIEW'>('CLUSTER_DETAIL');
+
   return (
     <div id="landing-page" className="min-h-screen bg-stone-50 text-stone-900 flex flex-col font-sans selection:bg-amber-100 selection:text-amber-900">
       {/* Visible Mandatory Prototype Banner */}
@@ -13,70 +17,112 @@ export const LandingPage: React.FC = () => {
         <span>Synthetic/demo data — prototype only</span>
       </div>
 
-      {/* Main Container */}
-      <main id="main-content" className="flex-1 max-w-5xl mx-auto w-full px-6 py-12 flex flex-col justify-between">
-        {/* Header and Hero Block */}
-        <div id="hero-section" className="space-y-8 pt-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-stone-300 bg-white text-xs font-medium text-stone-600 shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            Stage: RICE-01 Bootstrap & Architecture Setup
+      {/* Navigation Header */}
+      <header id="main-header" className="bg-white border-b border-stone-200">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-stone-900 text-amber-500 flex items-center justify-center font-black text-lg shadow-xs">
+              CP
+            </div>
+            <div>
+              <h1 className="text-lg font-black tracking-tight text-stone-900 leading-none">
+                CivicPulse AI
+              </h1>
+              <p className="text-xs text-stone-500 font-medium mt-0.5">
+                From Citizen Voice to Government Action
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-4">
-            <h1 id="app-title" className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-stone-900">
-              CivicPulse AI
-            </h1>
-            <p id="app-tagline" className="text-xl sm:text-2xl text-stone-600 font-medium tracking-tight">
-              From Citizen Voice to Government Action
-            </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              id="tab-cluster-detail"
+              onClick={() => setActiveTab('CLUSTER_DETAIL')}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
+                activeTab === 'CLUSTER_DETAIL'
+                  ? 'bg-amber-500 text-stone-950 shadow-xs'
+                  : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              G2 Cluster Detail (Contract C)
+            </button>
+            <button
+              type="button"
+              id="tab-citizen-flow"
+              onClick={() => setActiveTab('CITIZEN_FLOW')}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
+                activeTab === 'CITIZEN_FLOW'
+                  ? 'bg-amber-500 text-stone-950 shadow-xs'
+                  : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
+              }`}
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              Citizen Submission (C1 → C2)
+            </button>
+            <button
+              type="button"
+              id="tab-system-overview"
+              onClick={() => setActiveTab('SYSTEM_OVERVIEW')}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
+                activeTab === 'SYSTEM_OVERVIEW'
+                  ? 'bg-amber-500 text-stone-950 shadow-xs'
+                  : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              Pipeline Overview
+            </button>
           </div>
-
-          <p className="text-base text-stone-600 max-w-2xl leading-relaxed">
-            A real-time civic intelligence platform bridging community input with actionable public administration insights. Currently initialized in foundational scaffolding mode for the <span className="font-semibold text-stone-800">Build with AI: Code for Communities 2.0</span> challenge.
-          </p>
         </div>
+      </header>
 
-        {/* Architecture & Pipeline Architecture Status (Read-Only) */}
-        <div id="architecture-overview" className="my-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div id="module-backend" className="bg-white border border-stone-200 rounded-xl p-6 shadow-xs space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase tracking-wider text-stone-500">Backend Core</span>
-              <Activity className="w-4 h-4 text-emerald-600" />
+      {/* Main Content Area */}
+      <main id="main-content" className="flex-1 max-w-5xl mx-auto w-full px-6 py-8 flex flex-col justify-between">
+        {activeTab === 'CLUSTER_DETAIL' ? (
+          <ClusterDetailView />
+        ) : activeTab === 'CITIZEN_FLOW' ? (
+          <CitizenFlow />
+        ) : (
+          <div id="system-overview-view" className="space-y-8">
+            <div className="space-y-2">
+              <span className="text-xs font-mono uppercase tracking-wider text-amber-700 bg-amber-100 px-2.5 py-1 rounded-full font-bold">
+                RICE-05 AI Understanding Layer
+              </span>
+              <h2 className="text-3xl font-extrabold text-stone-900 tracking-tight">
+                AI Understanding & Multimodal Evidence Pipeline
+              </h2>
+              <p className="text-base text-stone-600 max-w-2xl leading-relaxed">
+                Structured contracts ensuring speech audio transcription (P0-10), multimodal physical evidence analysis (P0-11, AI Contract B), and closed-taxonomy civic grievance understanding (AI Contract A) before clustering.
+              </p>
             </div>
-            <h3 className="text-lg font-semibold text-stone-800">Express Node.js</h3>
-            <p className="text-sm text-stone-500 leading-normal">
-              Stateless service layer with active <code className="font-mono text-xs bg-stone-100 px-1 py-0.5 rounded text-stone-700">GET /health</code> endpoint ready for Cloud Run containerization.
-            </p>
-          </div>
 
-          <div id="module-frontend" className="bg-white border border-stone-200 rounded-xl p-6 shadow-xs space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase tracking-wider text-stone-500">Client Shell</span>
-              <Layers className="w-4 h-4 text-blue-600" />
-            </div>
-            <h3 className="text-lg font-semibold text-stone-800">React + Vite</h3>
-            <p className="text-sm text-stone-500 leading-normal">
-              Modular structure configured with structured routes, pages, components, services, and domain types.
-            </p>
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-xs space-y-3">
+                <span className="text-xs font-mono uppercase tracking-wider text-stone-500">AI Contract A</span>
+                <h3 className="text-lg font-semibold text-stone-800">Request Understanding Engine</h3>
+                <p className="text-sm text-stone-600 leading-normal">
+                  Parses narrative or voice transcript against the closed civic taxonomy (WATER, ROADS, SANITATION, POWER, etc.). Calculates multidimensional confidence (category, issue_type, intent, location) and guards against hallucinated categories.
+                </p>
+              </div>
 
-          <div id="module-ai-pipeline" className="bg-white border border-stone-200 rounded-xl p-6 shadow-xs space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase tracking-wider text-stone-500">AI Framework</span>
-              <Sparkles className="w-4 h-4 text-purple-600" />
+              <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-xs space-y-3">
+                <span className="text-xs font-mono uppercase tracking-wider text-stone-500">AI Contract B</span>
+                <h3 className="text-lg font-semibold text-stone-800">Multimodal Photo Evidence Analysis</h3>
+                <p className="text-sm text-stone-600 leading-normal">
+                  Identifies observable physical infrastructure traits from attached photos without speculating on personal identities or unstated facts. Flags material conflicts between visual evidence and textual claims.
+                </p>
+              </div>
             </div>
-            <h3 className="text-lg font-semibold text-stone-800">Prompt & Data Stubs</h3>
-            <p className="text-sm text-stone-500 leading-normal">
-              Standardized schemas, prompt versioning placeholders, and evaluation suites staged for subsequent phases.
-            </p>
           </div>
-        </div>
+        )}
 
         {/* Footer info */}
-        <footer id="landing-footer" className="pt-8 border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500 gap-4">
+        <footer id="landing-footer" className="pt-8 mt-12 border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500 gap-4">
           <div className="flex items-center gap-2">
             <Cpu className="w-4 h-4 text-stone-400" />
-            <span>CivicPulse AI — Scaffolding Build RICE-01</span>
+            <span>CivicPulse AI — Operational Build RICE-05 (AI Understanding & Multimodal Evidence)</span>
           </div>
           <div className="text-center sm:text-right">
             <span>Build with AI: Code for Communities 2.0</span>

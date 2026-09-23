@@ -1,5 +1,31 @@
 [
   {
+    "cluster_id": "CLU-0001",
+    "canonical_issue": "Drinking water shortage and distribution feeder line disruption in Bellandur",
+    "category_id": "WATER",
+    "issue_type_id": "DRINKING_WATER_SHORTAGE",
+    "geo_id": "GEO-LOC-BLR-01",
+    "request_count": 20,
+    "unique_local_units": 1,
+    "affected_population": 84200,
+    "severity": 4,
+    "urgency": 4,
+    "trend_score": 0.78,
+    "trend": "RISING",
+    "investment_alignment_score": 0.15,
+    "representative_request_ids": [
+      "REQ-TS-000101",
+      "REQ-KA-0001",
+      "REQ-KA-0002"
+    ],
+    "cluster_confidence": 0.93,
+    "created_at": "2024-03-10T08:00:00Z",
+    "updated_at": "2024-03-20T14:30:00Z",
+    "is_live_ai": true,
+    "execution_source": "LIVE_GEMINI",
+    "clustering_version": "v1.0"
+  },
+  {
     "cluster_id": "CLU-001",
     "canonical_issue": "Drinking water shortage and distribution feeder line disruption in Bellandur",
     "category_id": "WATER",
@@ -7,30 +33,33 @@
     "geo_id": "GEO-LOC-BLR-01",
     "request_count": 20,
     "unique_local_units": 1,
-    "affected_population": 42000,
+    "affected_population": 84200,
     "severity": 4,
     "urgency": 4,
     "trend_score": 0.78,
     "trend": "RISING",
     "investment_alignment_score": 0.15,
     "representative_request_ids": [
+      "REQ-TS-000101",
       "REQ-KA-0001",
-      "REQ-KA-0009",
-      "REQ-KA-0017"
+      "REQ-KA-0002"
     ],
     "cluster_confidence": 0.93,
     "created_at": "2024-03-10T08:00:00Z",
-    "updated_at": "2024-03-20T14:30:00Z"
+    "updated_at": "2024-03-20T14:30:00Z",
+    "is_live_ai": true,
+    "execution_source": "LIVE_GEMINI",
+    "clustering_version": "v1.0"
   },
   {
-    "cluster_id": "CLU-002",
+    "cluster_id": "CLU-0002",
     "canonical_issue": "Severe pavement degradation and deep potholes on HSR Sector main corridor",
     "category_id": "ROADS",
     "issue_type_id": "POTHOLE",
     "geo_id": "GEO-LOC-BLR-02",
     "request_count": 20,
     "unique_local_units": 1,
-    "affected_population": 35000,
+    "affected_population": 72500,
     "severity": 3,
     "urgency": 4,
     "trend_score": 0.45,
@@ -43,6 +72,35 @@
     ],
     "cluster_confidence": 0.88,
     "created_at": "2024-03-12T09:15:00Z",
-    "updated_at": "2024-03-21T11:00:00Z"
+    "updated_at": "2024-03-21T11:00:00Z",
+    "is_live_ai": true,
+    "execution_source": "LIVE_GEMINI",
+    "clustering_version": "v1.0"
+  },
+  {
+    "cluster_id": "CLU-002",
+    "canonical_issue": "Severe pavement degradation and deep potholes on HSR Sector main corridor",
+    "category_id": "ROADS",
+    "issue_type_id": "POTHOLE",
+    "geo_id": "GEO-LOC-BLR-02",
+    "request_count": 20,
+    "unique_local_units": 1,
+    "affected_population": 72500,
+    "severity": 3,
+    "urgency": 4,
+    "trend_score": 0.45,
+    "trend": "STABLE",
+    "investment_alignment_score": 0.85,
+    "representative_request_ids": [
+      "REQ-KA-0004",
+      "REQ-KA-0012",
+      "REQ-KA-0020"
+    ],
+    "cluster_confidence": 0.88,
+    "created_at": "2024-03-12T09:15:00Z",
+    "updated_at": "2024-03-21T11:00:00Z",
+    "is_live_ai": true,
+    "execution_source": "LIVE_GEMINI",
+    "clustering_version": "v1.0"
   }
 ]

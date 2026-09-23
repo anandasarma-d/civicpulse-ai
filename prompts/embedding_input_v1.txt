@@ -1,0 +1,3 @@
+# embedding_input_v1 (Doc 13 §7)
+# Canonical string representation formatted for request embedding generation
+Category: {{category_id}} | Issue Type: {{issue_type_id}} | Narrative: {{narrative}}

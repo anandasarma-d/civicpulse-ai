@@ -48,6 +48,33 @@ async function runUnitTests() {
   // Verify non-English request
   const nonEnglishReq = allReqs.find((r) => r.language !== 'en');
   assert(nonEnglishReq !== undefined, 'Should have non-English request');
+
+  // Verify specific RICE-03.01 spot-checked records
+  const req15 = await citizenRequestRepository.getById('REQ-KA-0015');
+  assert(req15 !== null, 'Should find REQ-KA-0015');
+  assert.strictEqual(req15.language, 'kn');
+  assert.strictEqual(req15.category_id, 'WATER');
+  assert.strictEqual(req15.issue_type_id, 'PIPELINE_FAILURE');
+  assert(req15.raw_text && req15.raw_text.includes('ಪೈಪ್‌ಲೈನ್'));
+  assert(req15.issue_summary && req15.issue_summary.includes('ಪೈಪ್‌ಲೈನ್'));
+
+  const req30 = await citizenRequestRepository.getById('REQ-KA-0030');
+  assert(req30 !== null, 'Should find REQ-KA-0030');
+  assert.strictEqual(req30.language, 'hi');
+  assert.strictEqual(req30.category_id, 'ROADS');
+  assert.strictEqual(req30.issue_type_id, 'POTHOLE');
+  assert(req30.raw_text && req30.raw_text.includes('गड्ढा'));
+  assert(req30.issue_summary && req30.issue_summary.includes('गड्ढा'));
+
+  const req50 = await citizenRequestRepository.getById('REQ-KA-0050');
+  assert(req50 !== null, 'Should find REQ-KA-0050');
+  assert.strictEqual(req50.geo_id, null);
+  assert.strictEqual(req50.category_id, 'WATER');
+  assert.strictEqual(req50.issue_type_id, 'SUPPLY_INTERRUPTION');
+  assert.strictEqual(req50.status, 'NEEDS_CLARIFICATION');
+  assert(req50.raw_text && req50.raw_text.includes('3 days'));
+  assert(req50.issue_summary && req50.issue_summary.includes('3 consecutive days'));
+  assert.notStrictEqual(req50.issue_summary, req1.issue_summary);
   console.log('✔ Test 3 passed\n');
 
   // Test 4: IssueClusterRepository operations

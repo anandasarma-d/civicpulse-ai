@@ -9,6 +9,13 @@ export type CitizenRequestStatus =
   | 'REVIEW_REQUIRED'
   | 'FAILED';
 
+export interface AIConfidence {
+  category: number; // 0-1
+  issue_type: number; // 0-1
+  intent: number; // 0-1
+  location: number; // 0-1
+}
+
 export interface CitizenRequest {
   request_id: string; // PK, format REQ-{state}-{number}
   created_at: string; // datetime (ISO 8601)
@@ -28,9 +35,11 @@ export interface CitizenRequest {
   geo_id: string | null;
   latitude: number | null;
   longitude: number | null;
-  ai_confidence: object | null;
+  ai_confidence: AIConfidence | null;
   verification_status: VerificationStatus;
   cluster_id: string | null;
   status: CitizenRequestStatus;
   synthetic_flag: boolean;
+  is_live_ai?: boolean;
+  execution_source?: 'LIVE_GEMINI' | 'DETERMINISTIC_FALLBACK';
 }

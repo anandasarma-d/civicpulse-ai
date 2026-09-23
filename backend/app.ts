@@ -3,6 +3,9 @@ import { correlationIdMiddleware } from './api/middleware/correlationId';
 import { requestLogger } from './api/middleware/logging';
 import { errorHandler, notFoundHandler } from './api/middleware/errorHandler';
 
+import { requestsRouter } from './api/routes/requests';
+import { clustersRouter } from './api/routes/clusters';
+
 const app = express();
 
 // 1. Correlation ID middleware (runs first for all requests)
@@ -31,7 +34,10 @@ app.get('/health', (_req, res) => {
  * Currently empty - ready for domain routes in subsequent stages
  */
 const v1Router = Router();
+v1Router.use('/requests', requestsRouter);
+v1Router.use('/clusters', clustersRouter);
 app.use('/api/v1', v1Router);
+app.use('/api/clusters', clustersRouter);
 
 /**
  * 404 handler for API routes

@@ -276,6 +276,84 @@ export function validateDataIntegrity(): boolean {
   }
   checksPassed++;
 
+  // --- CHECK 7: Synthetic Data Field Coherence & Anti-Duplication (Doc 12 §18) ---
+  const summarySeen = new Map<string, string>();
+  const transcriptSeen = new Map<string, string>();
+
+  for (const r of citizenRequests) {
+    // 1. Anti-duplication check: no duplicate issue_summary
+    if (r.issue_summary) {
+      const existingReq = summarySeen.get(r.issue_summary);
+      if (existingReq && existingReq !== r.request_id) {
+        violations.push(
+          `Coherence Violation: Record ${r.request_id} duplicates issue_summary from ${existingReq}: "${r.issue_summary}"`
+        );
+      }
+      summarySeen.set(r.issue_summary, r.request_id);
+    }
+
+    // 2. Anti-duplication check: no duplicate transcript
+    if (r.transcript) {
+      const existingReq = transcriptSeen.get(r.transcript);
+      if (existingReq && existingReq !== r.request_id) {
+        violations.push(
+          `Coherence Violation: Record ${r.request_id} duplicates transcript from ${existingReq}: "${r.transcript}"`
+        );
+      }
+      transcriptSeen.set(r.transcript, r.request_id);
+    }
+
+    // 3. Modality coherence: VOICE and MIXED must have faithful transcript matching raw_text
+    if (r.input_modality === 'VOICE' || r.input_modality === 'MIXED') {
+      if (!r.transcript || r.transcript.trim() === '') {
+        violations.push(
+          `Modality Coherence Violation: Record ${r.request_id} has modality ${r.input_modality} but empty transcript`
+        );
+      } else if (r.raw_text && r.transcript !== r.raw_text) {
+        violations.push(
+          `Modality Coherence Violation: Record ${r.request_id} transcript does not match raw_text`
+        );
+      }
+    }
+
+    // 4. Keyword / token overlap between raw_text and issue_summary (language-aware across en, kn, hi)
+    if (r.raw_text && r.issue_summary) {
+      // Clean non-alphanumeric/non-Indic punctuation, extract tokens with length >= 3
+      const cleanTokens = (text: string) =>
+        text
+          .toLowerCase()
+          .replace(/[.,/#!$%^&*;:{}=\-_`~()?"'।॥]/g, ' ')
+          .split(/\s+/)
+          .filter((w) => w.length >= 3);
+
+      const rawWords = new Set(cleanTokens(r.raw_text));
+      const summaryWords = cleanTokens(r.issue_summary);
+
+      let matches = 0;
+      for (const w of summaryWords) {
+        if (rawWords.has(w)) {
+          matches++;
+        }
+      }
+
+      if (matches < 2) {
+        violations.push(
+          `Coherence Violation [Language: ${r.language}]: Record ${r.request_id} has insufficient keyword overlap (${matches} matches) between raw_text and issue_summary`
+        );
+      }
+    }
+
+    // 5. Semantic contradiction check
+    const rawLower = (r.raw_text || '').toLowerCase();
+    if (r.category_id === 'WATER' && (rawLower.includes('pothole') || rawLower.includes('asphalt'))) {
+      violations.push(`Semantic Contradiction: Record ${r.request_id} categorized as WATER contains road keywords`);
+    }
+    if (r.category_id === 'ROADS' && (rawLower.includes('pipeline') || rawLower.includes('drinking water'))) {
+      violations.push(`Semantic Contradiction: Record ${r.request_id} categorized as ROADS contains water keywords`);
+    }
+  }
+  checksPassed++;
+
   // SUMMARY REPORT
   console.log('Validation Results:');
   console.log(`- Core Checks Evaluated: ${checksPassed}`);

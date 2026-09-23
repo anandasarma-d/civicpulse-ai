@@ -2,3 +2,8 @@ export * from './GeographyRepository';
 export * from './CitizenRequestRepository';
 export * from './IssueClusterRepository';
 export * from './GapAssessmentRepository';
+export * from './MediaEvidenceRepository';
+export * from './DemographicProfileRepository';
+export * from './InfrastructureProfileRepository';
+export * from './ProjectInvestmentRepository';
+export * from './RequestEmbeddingRepository';

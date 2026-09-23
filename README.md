@@ -1,5 +1,3 @@
-
-
 # CivicPulse AI
 
 > "From Citizen Voice to Government Action"

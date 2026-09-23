@@ -18,6 +18,7 @@ export interface CitizenRequestRepository {
   getById(request_id: string): Promise<CitizenRequest | null>;
   list(filter?: CitizenRequestFilter): Promise<CitizenRequest[]>;
   create(request: CitizenRequest): Promise<CitizenRequest>;
+  update(request_id: string, updates: Partial<CitizenRequest>): Promise<CitizenRequest | null>;
 }
 
 export class LocalJsonCitizenRequestRepository implements CitizenRequestRepository {
@@ -82,6 +83,21 @@ export class LocalJsonCitizenRequestRepository implements CitizenRequestReposito
       data.push({ ...request });
     }
     return { ...request };
+  }
+
+  async update(request_id: string, updates: Partial<CitizenRequest>): Promise<CitizenRequest | null> {
+    const data = this.loadData();
+    const index = data.findIndex((r) => r.request_id === request_id);
+    if (index < 0) {
+      return null;
+    }
+    const updated: CitizenRequest = {
+      ...data[index],
+      ...updates,
+      request_id, // Immutable ID
+    };
+    data[index] = updated;
+    return { ...updated };
   }
 }
 

@@ -13,8 +13,10 @@ CREATE TABLE IF NOT EXISTS issue_clusters (
   trend_score FLOAT64,
   trend STRING, -- 'RISING' | 'STABLE' | 'FALLING'
   investment_alignment_score FLOAT64,
-  representative_request_ids ARRAY<STRING> NOT NULL,
+  representative_request_ids ARRAY<STRING>,
   cluster_confidence FLOAT64 NOT NULL,
   created_at TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP NOT NULL
+  updated_at TIMESTAMP NOT NULL,
+  is_live_ai BOOL,
+  execution_source STRING
 );

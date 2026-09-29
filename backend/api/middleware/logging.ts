@@ -21,6 +21,7 @@ export function requestLogger(req: Request, res: Response, next: NextFunction): 
       status_code: res.statusCode,
       latency_ms,
       correlation_id: req.correlationId || (res.getHeader('X-Correlation-ID') as string) || 'unknown',
+      data_source: res.getHeader('X-CivicPulse-Data-Source') || undefined,
     };
 
     console.log(JSON.stringify(logEntry));

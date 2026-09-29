@@ -5,7 +5,7 @@ import backendApp from './backend/app';
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT || process.env.BACKEND_PORT || 8080);
 
   // Mount backend application (health check and API routes)
   app.use(backendApp);

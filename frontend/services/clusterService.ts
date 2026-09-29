@@ -1,8 +1,5 @@
-import {
-  ClusterDetailData,
-  ClusterListResponse,
-  IssueClusterSummary,
-} from '../types/cluster';
+import { ClusterDetailData, ClusterListResponse } from '../types/cluster';
+import { govHeaders } from './govAccess';
 
 export interface ClusterFilterParams {
   geo_id?: string;
@@ -24,7 +21,7 @@ class ClusterService {
     if (params?.offset) query.append('offset', String(params.offset));
 
     const url = `${this.baseUrl}${query.toString() ? `?${query.toString()}` : ''}`;
-    const res = await fetch(url);
+    const res = await fetch(url, { headers: govHeaders() });
     if (!res.ok) {
       throw new Error(`Failed to fetch clusters: ${res.status} ${res.statusText}`);
     }
@@ -32,7 +29,9 @@ class ClusterService {
   }
 
   async getClusterById(clusterId: string): Promise<ClusterDetailData> {
-    const res = await fetch(`${this.baseUrl}/${encodeURIComponent(clusterId)}`);
+    const res = await fetch(`${this.baseUrl}/${encodeURIComponent(clusterId)}`, {
+      headers: govHeaders(),
+    });
     if (!res.ok) {
       throw new Error(`Failed to fetch cluster ${clusterId}: ${res.status} ${res.statusText}`);
     }
@@ -42,7 +41,7 @@ class ClusterService {
   async triggerPipeline(): Promise<any> {
     const res = await fetch(`${this.baseUrl}/run-pipeline`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: govHeaders({ 'Content-Type': 'application/json' }),
     });
     if (!res.ok) {
       throw new Error(`Failed to trigger clustering pipeline: ${res.status} ${res.statusText}`);

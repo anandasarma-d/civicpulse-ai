@@ -11,7 +11,14 @@ import { CLUSTERING_VERSION } from './embeddingService';
 let genAIClient: GoogleGenAI | null = null;
 function getGenAI(): GoogleGenAI | null {
   if (!genAIClient && process.env.GEMINI_API_KEY) {
-    genAIClient = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    genAIClient = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        },
+      },
+    });
   }
   return genAIClient;
 }
@@ -25,7 +32,7 @@ export interface ClusterExplanationResult {
 }
 
 /**
- * Technical Constraint 1: Uses the configured production model (gemini-3.6-flash)
+ * Technical Constraint 1: Uses the configured production model (gemini-3.8-flash)
  * for Gemini generative call (cluster_explanation_v1 per Doc 13 §8).
  */
 export async function generateClusterExplanation(
@@ -45,7 +52,7 @@ export async function generateClusterExplanation(
   const ai = getGenAI();
   if (ai) {
     try {
-      const modelName = config.VERTEX_AI_MODEL || 'gemini-3.6-flash';
+      const modelName = config.VERTEX_AI_MODEL || 'gemini-3.8-flash';
       const prompt = `You are a municipal intelligence AI engine for CivicPulse AI.
 Analyze this cluster of citizen reports sharing Category: "${category_id}", Issue Type: "${issue_type_id}", in Locality: "${geoName}".
 Produce a concise, factual, objective canonical issue title and a community-level summary representing the aggregate problem.

@@ -21,7 +21,14 @@ export interface VoiceTranscriptionResult {
 let genAIClient: GoogleGenAI | null = null;
 function getGenAI(): GoogleGenAI | null {
   if (!genAIClient && process.env.GEMINI_API_KEY) {
-    genAIClient = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    genAIClient = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        },
+      },
+    });
   }
   return genAIClient;
 }
@@ -50,9 +57,9 @@ export async function transcribeVoiceAudio(
   const ai = getGenAI();
   if (ai && input.audio_data) {
     try {
-      let modelName = config.VERTEX_AI_MODEL || 'gemini-3.6-flash';
+      let modelName = process.env.VOICE_MODEL || 'gemini-3.5-transcribe';
       if (!modelName || modelName.includes('placeholder') || modelName.includes('your-')) {
-        modelName = 'gemini-3.6-flash';
+        modelName = 'gemini-3.5-transcribe';
       }
 
       const cleanAudio = input.audio_data.includes(',')

@@ -36,7 +36,14 @@ export interface PhotoEvidenceAnalysisResult {
 let genAIClient: GoogleGenAI | null = null;
 function getGenAI(): GoogleGenAI | null {
   if (!genAIClient && process.env.GEMINI_API_KEY) {
-    genAIClient = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    genAIClient = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        },
+      },
+    });
   }
   return genAIClient;
 }
@@ -84,9 +91,9 @@ async function callGeminiPhotoAnalysis(
   storageUri: string,
   context: { raw_text?: string | null; category_id?: string | null; issue_type_id?: string | null }
 ): Promise<PhotoEvidenceAnalysisResult> {
-  let modelName = config.VERTEX_AI_MODEL || 'gemini-3.6-flash';
-  if (!modelName || modelName.includes('placeholder') || modelName.includes('your-')) {
-    modelName = 'gemini-3.6-flash';
+  let modelName = config.VERTEX_AI_MODEL || 'gemini-3.8-flash';
+  if (!modelName || modelName.includes('placeholder') || modelName.includes('your-') || modelName === 'gemini-3.6-flash') {
+    modelName = 'gemini-3.8-flash';
   }
 
   const prompt = `You are CivicPulse AI's Multimodal Evidence Analysis Engine (AI Contract B).

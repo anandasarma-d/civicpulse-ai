@@ -16,6 +16,7 @@ import {
 } from '../../models/CitizenRequest';
 import { MediaEvidence } from '../../models/MediaEvidence';
 import { AppError } from '../middleware/errorHandler';
+import { coerceJson } from '../../common/bigqueryClient';
 
 export const requestsRouter = Router();
 
@@ -32,6 +33,19 @@ interface CreateRequestBody {
 
 const VALID_MODALITIES: Set<string> = new Set(['TEXT', 'VOICE', 'PHOTO', 'MIXED']);
 const VALID_CHANNELS: Set<string> = new Set(['web', 'mobile', 'assisted']);
+
+/** Doc 04 §3 CitizenRequest: REQ-{state}-{number} with 6-digit zero-padded number. */
+async function allocateCitizenRequestId(state: string): Promise<string> {
+  for (let attempt = 0; attempt < 64; attempt++) {
+    const number = Math.floor(Math.random() * 1_000_000).toString().padStart(6, '0');
+    const candidate = `REQ-${state}-${number}`;
+    const existing = await citizenRequestRepository.getById(candidate);
+    if (!existing) {
+      return candidate;
+    }
+  }
+  throw new AppError(500, 'Unable to allocate a unique citizen request ID', 'INTERNAL_ERROR', []);
+}
 
 /**
  * POST /api/v1/requests
@@ -88,9 +102,7 @@ requestsRouter.post('/', async (req: Request, res: Response, next: NextFunction)
       );
     }
 
-    // Generate Request ID: REQ-KA-{8-digit random}
-    const randomSuffix = Math.floor(10000000 + Math.random() * 90000000);
-    const requestId = `REQ-KA-${randomSuffix}`;
+    const requestId = await allocateCitizenRequestId('KA');
 
     // Extract photo and audio URIs if media was attached
     let photoUri: string | null = null;
@@ -270,10 +282,13 @@ requestsRouter.post('/', async (req: Request, res: Response, next: NextFunction)
       });
     }
 
-    // 6. Return HTTP 202 Accepted (Doc 14 §5)
+    // 6. Return HTTP 202 Accepted (Doc 14 §5). Processing above is awaited, so
+    // the body status is the persisted status at response time, not a stale
+    // PROCESSING placeholder.
+    const processed = await citizenRequestRepository.getById(requestId);
     res.status(202).json({
       request_id: requestId,
-      status: 'PROCESSING',
+      status: processed?.status || 'PROCESSING',
       correlation_id,
     });
   } catch (err) {
@@ -305,6 +320,7 @@ requestsRouter.get('/:request_id', async (req: Request, res: Response, next: Nex
 
     res.status(200).json({
       ...request,
+      ai_confidence: coerceJson(request.ai_confidence) ?? request.ai_confidence,
       media_evidence,
     });
   } catch (err) {

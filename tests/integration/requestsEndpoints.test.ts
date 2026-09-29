@@ -24,11 +24,21 @@ async function runIntegrationTests() {
 
   assert.strictEqual(postRes.status, 202, 'Must return HTTP 202 Accepted');
   assert.ok(postRes.body.request_id, 'Must return request_id');
-  assert.strictEqual(postRes.body.status, 'PROCESSING', 'Initial status in 202 response must be PROCESSING');
+  assert.match(
+    postRes.body.request_id,
+    /^REQ-KA-\d{6}$/,
+    'New request IDs must be REQ-{state}-{6-digit zero-padded number}'
+  );
+  assert.notStrictEqual(
+    postRes.body.status,
+    'PROCESSING',
+    '202 body must reflect the status after awaited processing, not a stale PROCESSING placeholder'
+  );
   assert.strictEqual(postRes.body.correlation_id, 'test-corr-hero-water-001', 'Correlation ID must be preserved');
 
   const createdRequestId = postRes.body.request_id;
   console.log(`✔ Created request: ${createdRequestId}`);
+  console.log('✔ POST 202 body:', JSON.stringify(postRes.body));
 
   // Test 2: GET /api/v1/requests/:request_id (Retrieve Hero Request)
   console.log('\nTest 2: Retrieving request and verifying AI understanding (GET /api/v1/requests/:id)...');

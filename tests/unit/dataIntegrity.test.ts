@@ -79,8 +79,8 @@ async function runUnitTests() {
 
   // Test 4: IssueClusterRepository operations
   console.log('Test 4: IssueClusterRepository getById & list');
-  const cluster = await issueClusterRepository.getById('CLU-001');
-  assert(cluster !== null, 'Should find CLU-001');
+  const cluster = await issueClusterRepository.getById('CLU-0001');
+  assert(cluster !== null, 'Should find CLU-0001');
   assert.strictEqual(cluster.category_id, 'WATER');
 
   const clusters = await issueClusterRepository.list();

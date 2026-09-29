@@ -2,9 +2,11 @@
 
 > "From Citizen Voice to Government Action"
 
-This is a hackathon prototype for the **"Build with AI: Code for Communities 2.0"** challenge.
+Hackathon prototype for **Google Cloud "Build with AI: Code for Communities 2.0"**.
 
-This repository implements **RICE-01** (Project Bootstrap & Implementation Setup) — a clean scaffolding architecture separating frontend, backend, prompts, tests, and data pipelines without product features or unprompted mock services.
+Citizen requests are classified (Contract A), clustered (Contract C), scored with a deterministic priority engine (Contract D), and turned into advisory recommendations (Contract E). Persistence is **BigQuery** dataset `civicpulse_demo` when GCP credentials are present, with a **static JSON** seed fallback under `data/seed/`.
+
+Policy Copilot (Contract F) is **not implemented**.
 
 ---
 
@@ -14,120 +16,122 @@ This repository implements **RICE-01** (Project Bootstrap & Implementation Setup
 civicpulse-ai/
 ├── backend/
 │   ├── api/
-│   │   ├── routes/              # API route definitions
-│   │   └── middleware/          # Express middlewares
+│   │   ├── routes/                 # requests, clusters, gaps, recommendations
+│   │   └── middleware/             # correlationId, logging, dataSource, errors
 │   ├── services/
-│   │   ├── request_ai/          # Citizen request understanding service
-│   │   ├── clustering/          # Semantic clustering service
-│   │   ├── decision_intelligence/ # Prioritization & decision engine
-│   │   ├── recommendations/     # Policy and action recommendation service
-│   │   └── copilot/             # Government Policy Copilot assistant
-│   ├── repositories/            # Data access layer
-│   ├── models/                  # Domain and data models
-│   ├── common/                  # Shared utilities and helpers
-│   ├── app.ts                   # Express application (GET /health)
-│   └── server.ts                # Standalone backend server runner
-├── frontend/
-│   ├── pages/                   # Application pages (LandingPage)
-│   ├── components/              # Reusable UI components
-│   ├── services/                # API client services
-│   ├── types/                   # Frontend TypeScript interfaces
-│   └── App.tsx                  # Root frontend component
+│   │   ├── request_ai/             # Contract A + B + voice
+│   │   ├── clustering/             # Contract C
+│   │   ├── decision_intelligence/  # Contract D (priority is never Gemini)
+│   │   ├── recommendations/        # Contract E
+│   │   └── copilot/                # placeholder only
+│   ├── repositories/               # BigQuery or local JSON
+│   ├── models/
+│   ├── common/                     # config, taxonomy, BigQuery client
+│   ├── app.ts                      # Express app (GET /health + /api/v1)
+│   └── server.ts                   # Standalone backend (:8080)
+├── frontend/                       # LandingPage tabs G3 / G4 / G2 / C1→C2
 ├── data/
-│   ├── schemas/                 # Data schemas (JSON Schema / BigQuery)
-│   ├── synthetic/               # Synthetic datasets for testing
-│   └── seed/                    # Initial database seed fixtures
-├── prompts/                     # Versioned Gemini / Vertex AI prompt templates
-├── tests/
-│   ├── unit/                    # Unit test suites
-│   ├── integration/             # Integration tests
-│   └── ai_eval/                 # AI prompt evaluation benchmarks
-├── infra/                       # Cloud Run / Terraform infrastructure definitions
-├── docs/                        # Architecture decision records and documentation
-├── .env.example                 # Environment variable templates
-├── server.ts                    # Unified development server (Vite + Express on :3000)
-└── package.json                 # Dependencies and build scripts
+│   ├── schemas/                    # BigQuery DDL + taxonomy.json
+│   └── seed/                       # Fixture JSON (also loaded into BigQuery)
+├── prompts/                        # Versioned Gemini templates
+├── tests/{unit,integration,ai_eval}/
+├── scripts/                        # seed load, integrity, evidence capture
+├── docs/reports/
+├── .env.example
+├── server.ts                       # Unified Vite + Express (:3000)
+└── package.json
 ```
 
 ---
 
 ## Installation
 
-Ensure you have [Node.js](https://nodejs.org/) (v18+) and `npm` installed.
+Node.js v18+ and npm:
 
 ```bash
-# Clone the repository and navigate to root
 cd civicpulse-ai
-
-# Install dependencies
 npm install
-
-# Copy environment variable template
 cp .env.example .env
+```
+
+Fill `.env` locally. Gemini calls need `GEMINI_API_KEY`. BigQuery persistence needs `GOOGLE_CLOUD_PROJECT` plus Application Default Credentials.
+
+Load seed tables (optional, once credentials and dataset exist):
+
+```bash
+npm run bq:load-seed
 ```
 
 ---
 
 ## Running Locally
 
-### 1. Unified Full-Stack (Default Dev Mode)
-
-Runs both the Express backend API and the Vite React frontend concurrently on port `3000`:
+### 1. Unified full-stack (default)
 
 ```bash
 npm run dev
 ```
 
-- **Frontend UI**: [http://localhost:3000](http://localhost:3000)
-- **Backend Health Check**: [http://localhost:3000/health](http://localhost:3000/health)
-  - Returns `{"status":"ok"}` with HTTP 200.
+Listens on `PORT` / `BACKEND_PORT`, default **8080**.
 
-### 2. Running Frontend and Backend Separately
+- App: [http://localhost:8080](http://localhost:8080)
+- Health: [http://localhost:8080/health](http://localhost:8080/health) → `{"status":"ok"}`
 
-If you prefer to run services in isolated terminal processes:
+Citizen submission (C-flow) is public. Cluster / gap / recommendation screens (G-flow) prompt for the demo access key when `GOV_DEMO_ACCESS_KEY` is set (Cloud Run). Locally, leave that variable empty to skip the gate.
 
-#### Standalone Backend:
+### 2. Separate processes
+
 ```bash
-npm run dev:backend
+npm run dev:backend    # Express on :8080 (or PORT / BACKEND_PORT)
+npm run dev:frontend   # Vite on :3000
 ```
-*Starts Express on port 8080 (or `PORT` defined in `.env`). The health check is available at `http://localhost:8080/health`.*
-
-#### Standalone Frontend:
-```bash
-npm run dev:frontend
-```
-*Starts Vite dev server on `http://localhost:3000`.*
 
 ---
 
-## Health Check Verification
+## API
 
-You can verify the backend health endpoint using curl:
+Stable base path: **`/api/v1`**. Health is unversioned.
+
+| Method | Path | Role |
+|---|---|---|
+| GET | `/health` | Liveness |
+| POST | `/api/v1/requests` | Create + process (HTTP 202) |
+| GET | `/api/v1/requests/:request_id` | Request + media evidence |
+| GET | `/api/v1/clusters` | List clusters |
+| POST | `/api/v1/clusters/run-pipeline` | Run clustering pipeline |
+| GET | `/api/v1/clusters/:cluster_id` | Cluster detail (`CLU-XXXX`) |
+| GET | `/api/v1/gaps` | List gaps (priority descending) |
+| GET | `/api/v1/gaps/:gap_id` | Gap detail (`GAP-XXXX`) |
+| GET | `/api/v1/recommendations/:recommendation_id` | Recommendation detail (`REC-XXXX`) |
+
+Responses may include `data_source`: `BIGQUERY` or `STATIC_JSON`.
+
+There is no recommendation execute endpoint. Recommendations are decision support, not autonomous government action.
+
+G-flow routes (`/clusters`, `/gaps`, `/recommendations`) require header `X-Gov-Access-Key` (or query `gov_access_key`) when `GOV_DEMO_ACCESS_KEY` is configured. C-flow `/requests` does not.
+
+Live demo: [https://civicpulse-ai-741034792208.us-central1.run.app](https://civicpulse-ai-741034792208.us-central1.run.app) (Cloud Run revision `civicpulse-ai-00003-fz9`).
+
+---
+
+## Persistence
+
+When ADC + `GOOGLE_CLOUD_PROJECT` can reach dataset `civicpulse_demo` (us-central1), repositories read and write BigQuery. Otherwise they use `data/seed/*.json`.
+
+Hero IDs: `REQ-TS-000101`, `CLU-0001`, `GAP-0001`, `REC-0001`. Hero priority score **92.1** is computed by the deterministic engine, never by Gemini.
+
+---
+
+## Tests
 
 ```bash
-curl -i http://localhost:3000/health
-```
-
-Expected output:
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
-
-{"status":"ok"}
+npm test
+npm run lint
+npm run validate:data
 ```
 
 ---
 
 ## Environment Variables
 
-Refer to `.env.example` for all configurable variables, including:
-- `GOOGLE_CLOUD_PROJECT`
-- `GOOGLE_CLOUD_REGION`
-- `BIGQUERY_DATASET`
-- `GCS_BUCKET`
-- `VERTEX_AI_MODEL`
-- `PROMPT_VERSION_REQUEST_UNDERSTANDING`
-- `PROMPT_VERSION_RECOMMENDATION`
-- `PROMPT_VERSION_COPILOT`
-- `FIREBASE_PROJECT_ID` (optional)
-- `MAPS_API_KEY` (optional)
+See `.env.example` for every name the app reads. Do not put secrets in the example file.

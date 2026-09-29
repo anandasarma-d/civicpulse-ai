@@ -6,35 +6,19 @@ import { infrastructureProfileRepository } from '../../repositories/Infrastructu
 import { projectInvestmentRepository } from '../../repositories/ProjectInvestmentRepository';
 import { mediaEvidenceRepository } from '../../repositories/MediaEvidenceRepository';
 import { runClusteringPipeline } from '../../services/clustering/clusteringPipeline';
-import { IssueCluster } from '../../models/IssueCluster';
 import { CitizenRequest } from '../../models/CitizenRequest';
 import { InfrastructureProfile } from '../../models/InfrastructureProfile';
 import { ProjectInvestment } from '../../models/ProjectInvestment';
+import { coerceJson } from '../../common/bigqueryClient';
 
 export const clustersRouter = Router();
 
-/**
- * Normalizes cluster ID lookup to support both CLU-0001 and CLU-001 aliases
- */
-async function findClusterWithAlias(id: string): Promise<IssueCluster | null> {
-  let cluster = await issueClusterRepository.getById(id);
-  if (cluster) return cluster;
-
-  // Try padded or unpadded alias
-  if (id === 'CLU-0001') {
-    cluster = await issueClusterRepository.getById('CLU-001');
-  } else if (id === 'CLU-001') {
-    cluster = await issueClusterRepository.getById('CLU-0001');
-  } else if (id.startsWith('CLU-')) {
-    const numPart = id.replace('CLU-', '');
-    const num = parseInt(numPart, 10);
-    if (!isNaN(num)) {
-      const padded = `CLU-${String(num).padStart(4, '0')}`;
-      const unpadded = `CLU-${String(num).padStart(3, '0')}`;
-      cluster = (await issueClusterRepository.getById(padded)) || (await issueClusterRepository.getById(unpadded));
-    }
-  }
-  return cluster;
+function withParsedAiConfidence(request: CitizenRequest, cluster_id: string): CitizenRequest {
+  return {
+    ...request,
+    cluster_id,
+    ai_confidence: coerceJson(request.ai_confidence) ?? request.ai_confidence,
+  };
 }
 
 /**
@@ -103,7 +87,21 @@ clustersRouter.post('/run-pipeline', async (_req: Request, res: Response, next: 
 clustersRouter.get('/:cluster_id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const clusterId = req.params.cluster_id;
-    const cluster = await findClusterWithAlias(clusterId);
+
+    // Strict Doc 04 §3 canonical ID enforcement (CLU-XXXX with 4 digits)
+    if (!/^CLU-\d{4}$/.test(clusterId)) {
+      res.status(404).json({
+        error: {
+          code: 'NOT_FOUND',
+          message: `IssueCluster with id '${clusterId}' not found. IDs must conform to canonical CLU-XXXX format (Doc 04 §3).`,
+          details: [],
+          correlation_id: req.headers['x-correlation-id'] || 'system',
+        },
+      });
+      return;
+    }
+
+    const cluster = await issueClusterRepository.getById(clusterId);
 
     if (!cluster) {
       res.status(404).json({
@@ -126,10 +124,9 @@ clustersRouter.get('/:cluster_id', async (req: Request, res: Response, next: Nex
       const fetched = await Promise.all(
         cluster.representative_request_ids.map((id) => citizenRequestRepository.getById(id))
       );
-      representative_requests = (fetched.filter(Boolean) as CitizenRequest[]).map((r) => ({
-        ...r,
-        cluster_id: cluster.cluster_id,
-      }));
+      representative_requests = (fetched.filter(Boolean) as CitizenRequest[]).map((r) =>
+        withParsedAiConfidence(r, cluster.cluster_id)
+      );
     }
     // Fallback: If no representative IDs or missing, query by cluster_id
     if (representative_requests.length === 0) {
@@ -137,20 +134,9 @@ clustersRouter.get('/:cluster_id', async (req: Request, res: Response, next: Nex
         cluster_id: cluster.cluster_id,
         limit: 5,
       });
-      representative_requests = listFallback.map((r) => ({
-        ...r,
-        cluster_id: cluster.cluster_id,
-      }));
-      if (representative_requests.length === 0 && cluster.cluster_id !== clusterId) {
-        const altFallback = await citizenRequestRepository.list({
-          cluster_id: clusterId,
-          limit: 5,
-        });
-        representative_requests = altFallback.map((r) => ({
-          ...r,
-          cluster_id: cluster.cluster_id,
-        }));
-      }
+      representative_requests = listFallback.map((r) =>
+        withParsedAiConfidence(r, cluster.cluster_id)
+      );
     }
 
     // 3. Evidence references from member requests

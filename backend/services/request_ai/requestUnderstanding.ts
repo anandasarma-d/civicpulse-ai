@@ -1,7 +1,37 @@
+import fs from 'fs';
+import path from 'path';
 import { GoogleGenAI, Type } from '@google/genai';
 import config from '../../common/config';
 import { TAXONOMY, VALID_CATEGORIES, VALID_ISSUE_TYPES, CATEGORY_ISSUE_MAP } from '../../common/taxonomy';
 import { AIConfidence } from '../../models/CitizenRequest';
+
+const REQUEST_UNDERSTANDING_PROMPT_PATH = path.resolve(
+  process.cwd(),
+  'prompts/request_understanding_v1.txt'
+);
+
+function loadRequestUnderstandingPrompt(replacements: {
+  promptVersion: string;
+  taxonomy: string;
+  narrative: string;
+  language: string;
+  media: string;
+  location: string;
+}): string {
+  const raw = fs.readFileSync(REQUEST_UNDERSTANDING_PROMPT_PATH, 'utf-8');
+  const bodyStart = raw.indexOf('You are CivicPulse AI');
+  if (bodyStart < 0) {
+    throw new Error('prompts/request_understanding_v1.txt is missing the Contract A body');
+  }
+  return raw
+    .slice(bodyStart)
+    .replaceAll('{{PROMPT_VERSION}}', replacements.promptVersion)
+    .replaceAll('{{TAXONOMY}}', replacements.taxonomy)
+    .replaceAll('{{NARRATIVE}}', replacements.narrative)
+    .replaceAll('{{LANGUAGE}}', replacements.language)
+    .replaceAll('{{MEDIA}}', replacements.media)
+    .replaceAll('{{LOCATION}}', replacements.location);
+}
 
 export interface RequestMediaItem {
   media_type: 'PHOTO' | 'AUDIO';
@@ -41,7 +71,14 @@ export interface RequestUnderstandingResult {
 let genAIClient: GoogleGenAI | null = null;
 function getGenAI(): GoogleGenAI | null {
   if (!genAIClient && process.env.GEMINI_API_KEY) {
-    genAIClient = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    genAIClient = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        },
+      },
+    });
   }
   return genAIClient;
 }
@@ -106,33 +143,19 @@ async function callGeminiRequestUnderstanding(
   hasLocation: boolean,
   locationConfidence: number
 ): Promise<RequestUnderstandingResult> {
-  let modelName = config.VERTEX_AI_MODEL || 'gemini-3.6-flash';
-  if (!modelName || modelName.includes('placeholder') || modelName.includes('your-')) {
-    modelName = 'gemini-3.6-flash';
+  let modelName = config.VERTEX_AI_MODEL || 'gemini-3.8-flash';
+  if (!modelName || modelName.includes('placeholder') || modelName.includes('your-') || modelName === 'gemini-3.6-flash') {
+    modelName = 'gemini-3.8-flash';
   }
 
-  const prompt = `You are CivicPulse AI's Request Understanding Engine (AI Contract A, Prompt Version: ${
-    config.PROMPT_VERSION_REQUEST_UNDERSTANDING || 'v1.0'
-  }).
-Analyze the citizen civic grievance below.
-
-=== CLOSED TAXONOMY ===
-${JSON.stringify(TAXONOMY, null, 2)}
-
-=== CITIZEN GRIEVANCE ===
-Narrative text: "${narrativeText}"
-Language hint: "${input.language || 'auto'}"
-Media attached: ${input.media ? input.media.length + ' item(s)' : 'none'}
-Resolved Location: ${input.geo_id || (hasLocation ? `Lat ${input.latitude}, Lng ${input.longitude}` : 'MISSING')}
-
-=== RULES ===
-1. Category and Issue Type MUST be one of the exact IDs defined in the CLOSED TAXONOMY above.
-2. If the grievance does NOT match any category or issue type in the closed taxonomy, or is completely unclear, you MUST set category_id to "UNKNOWN" and issue_type_id to "UNKNOWN", and set needs_clarification to true.
-3. NEVER invent a new category_id or issue_type_id.
-4. If location is MISSING, set needs_clarification to true and formulate a polite clarification_question requesting their specific street or landmark.
-5. Severity (1-5) and Urgency (1-5) must be integers.
-6. ai_confidence MUST have four numeric values between 0 and 1: category, issue_type, intent, location.
-7. NEVER calculate or mention any priority score or composite score — priority scoring is strictly out of scope.`;
+  const prompt = loadRequestUnderstandingPrompt({
+    promptVersion: config.PROMPT_VERSION_REQUEST_UNDERSTANDING || 'v1.0',
+    taxonomy: JSON.stringify(TAXONOMY, null, 2),
+    narrative: narrativeText,
+    language: input.language || 'auto',
+    media: input.media ? input.media.length + ' item(s)' : 'none',
+    location: input.geo_id || (hasLocation ? `Lat ${input.latitude}, Lng ${input.longitude}` : 'MISSING'),
+  });
 
   const response = await ai.models.generateContent({
     model: modelName,

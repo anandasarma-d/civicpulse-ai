@@ -81,6 +81,8 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, _next): void =>
   const correlationId =
     req.correlationId || (res.getHeader('X-Correlation-ID') as string) || 'unknown';
 
+  console.error(`[errorHandler] ${correlationId}`, err);
+
   // Ensure correlation header is reflected on the response
   if (!res.getHeader('X-Correlation-ID')) {
     res.setHeader('X-Correlation-ID', correlationId);

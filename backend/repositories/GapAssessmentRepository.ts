@@ -1,6 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 import { GapAssessment } from '../models/GapAssessment';
+import {
+  gapAssessmentToBq,
+  loadFromBigQueryOrJson,
+  mapGapAssessment,
+  persistIfBigQuery,
+} from './bigqueryStore';
 
 export interface GapAssessmentFilter {
   geo_id?: string;
@@ -10,9 +16,6 @@ export interface GapAssessmentFilter {
   offset?: number;
 }
 
-/**
- * Note: A BigQuery-backed implementation will be added later without changing the interface shape.
- */
 export interface GapAssessmentRepository {
   getById(gap_id: string): Promise<GapAssessment | null>;
   list(filter?: GapAssessmentFilter): Promise<GapAssessment[]>;
@@ -22,33 +25,40 @@ export interface GapAssessmentRepository {
 export class LocalJsonGapAssessmentRepository implements GapAssessmentRepository {
   private filePath: string;
   private cache: GapAssessment[] | null = null;
+  private loading: Promise<void> | null = null;
 
   constructor(filePath?: string) {
     this.filePath =
       filePath || path.resolve(process.cwd(), 'data/seed/gap_assessments.json');
   }
 
-  private loadData(): GapAssessment[] {
-    if (this.cache) {
-      return this.cache;
+  private readJson(): GapAssessment[] {
+    if (!fs.existsSync(this.filePath)) return [];
+    return JSON.parse(fs.readFileSync(this.filePath, 'utf-8')) as GapAssessment[];
+  }
+
+  private async ensureCache(): Promise<GapAssessment[]> {
+    if (this.cache) return this.cache;
+    if (!this.loading) {
+      this.loading = loadFromBigQueryOrJson('gap_assessments', () => this.readJson(), mapGapAssessment)
+        .then((rows) => {
+          this.cache = rows;
+        })
+        .finally(() => {
+          this.loading = null;
+        });
     }
-    if (!fs.existsSync(this.filePath)) {
-      this.cache = [];
-      return this.cache;
-    }
-    const raw = fs.readFileSync(this.filePath, 'utf-8');
-    this.cache = JSON.parse(raw) as GapAssessment[];
-    return this.cache;
+    await this.loading;
+    return this.cache || [];
   }
 
   async getById(gap_id: string): Promise<GapAssessment | null> {
-    const data = this.loadData();
-    const item = data.find((g) => g.gap_id === gap_id);
+    const item = (await this.ensureCache()).find((g) => g.gap_id === gap_id);
     return item ? { ...item } : null;
   }
 
   async list(filter?: GapAssessmentFilter): Promise<GapAssessment[]> {
-    let data = this.loadData();
+    let data = await this.ensureCache();
     if (filter) {
       if (filter.geo_id !== undefined) {
         data = data.filter((g) => g.geo_id === filter.geo_id);
@@ -70,13 +80,14 @@ export class LocalJsonGapAssessmentRepository implements GapAssessmentRepository
   }
 
   async create(gapAssessment: GapAssessment): Promise<GapAssessment> {
-    const data = this.loadData();
+    const data = await this.ensureCache();
     const existingIndex = data.findIndex((g) => g.gap_id === gapAssessment.gap_id);
     if (existingIndex >= 0) {
       data[existingIndex] = { ...gapAssessment };
     } else {
       data.push({ ...gapAssessment });
     }
+    await persistIfBigQuery('gap_assessments', 'gap_id', gapAssessment.gap_id, gapAssessmentToBq(gapAssessment));
     return { ...gapAssessment };
   }
 }

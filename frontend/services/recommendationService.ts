@@ -1,10 +1,15 @@
-/**
- * Recommendation Service Stub (RICE-02 Foundation)
- * Real implementation scheduled for RICE-04+
- */
+import { RecommendationApiResponse } from '../types/recommendation';
+import { govHeaders } from './govAccess';
 
-export async function getRecommendation(_id?: unknown): Promise<unknown> {
-  throw new Error('Not implemented — RICE-04+');
+export async function getRecommendation(recommendationId: string): Promise<RecommendationApiResponse> {
+  const res = await fetch(`/api/v1/recommendations/${encodeURIComponent(recommendationId)}`, {
+    headers: govHeaders(),
+  });
+  if (!res.ok) {
+    const errJson = await res.json().catch(() => ({}));
+    throw new Error(errJson?.error?.message || `Failed to get recommendation ${recommendationId}: HTTP ${res.status}`);
+  }
+  return res.json();
 }
 
 export const recommendationService = {

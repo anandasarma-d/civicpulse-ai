@@ -1,15 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import { Geography, GeographyLevel } from '../models/Geography';
+import { loadFromBigQueryOrJson, mapGeography } from './bigqueryStore';
 
 export interface GeographyFilter {
   level?: GeographyLevel;
   parent_geo_id?: string | null;
 }
 
-/**
- * Note: A BigQuery-backed implementation will be added later without changing the interface shape.
- */
 export interface GeographyRepository {
   getById(geo_id: string): Promise<Geography | null>;
   list(filter?: GeographyFilter): Promise<Geography[]>;
@@ -19,33 +17,40 @@ export interface GeographyRepository {
 export class LocalJsonGeographyRepository implements GeographyRepository {
   private filePath: string;
   private cache: Geography[] | null = null;
+  private loading: Promise<void> | null = null;
 
   constructor(filePath?: string) {
     this.filePath =
       filePath || path.resolve(process.cwd(), 'data/seed/geographies.json');
   }
 
-  private loadData(): Geography[] {
-    if (this.cache) {
-      return this.cache;
+  private readJson(): Geography[] {
+    if (!fs.existsSync(this.filePath)) return [];
+    return JSON.parse(fs.readFileSync(this.filePath, 'utf-8')) as Geography[];
+  }
+
+  private async ensureCache(): Promise<Geography[]> {
+    if (this.cache) return this.cache;
+    if (!this.loading) {
+      this.loading = loadFromBigQueryOrJson('geographies', () => this.readJson(), mapGeography)
+        .then((rows) => {
+          this.cache = rows;
+        })
+        .finally(() => {
+          this.loading = null;
+        });
     }
-    if (!fs.existsSync(this.filePath)) {
-      this.cache = [];
-      return this.cache;
-    }
-    const raw = fs.readFileSync(this.filePath, 'utf-8');
-    this.cache = JSON.parse(raw) as Geography[];
-    return this.cache;
+    await this.loading;
+    return this.cache || [];
   }
 
   async getById(geo_id: string): Promise<Geography | null> {
-    const data = this.loadData();
-    const item = data.find((g) => g.geo_id === geo_id);
+    const item = (await this.ensureCache()).find((g) => g.geo_id === geo_id);
     return item ? { ...item } : null;
   }
 
   async list(filter?: GeographyFilter): Promise<Geography[]> {
-    let data = this.loadData();
+    let data = await this.ensureCache();
     if (filter) {
       if (filter.level !== undefined) {
         data = data.filter((g) => g.level === filter.level);
@@ -58,7 +63,7 @@ export class LocalJsonGeographyRepository implements GeographyRepository {
   }
 
   async create(geography: Geography): Promise<Geography> {
-    const data = this.loadData();
+    const data = await this.ensureCache();
     const existingIndex = data.findIndex((g) => g.geo_id === geography.geo_id);
     if (existingIndex >= 0) {
       data[existingIndex] = { ...geography };

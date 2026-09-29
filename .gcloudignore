@@ -1,0 +1,14 @@
+.git
+.cursor
+.env
+.env.*
+!.env.example
+node_modules
+dist
+*.log
+*.pcm
+*.wav
+speech_hero.*
+REC-0001.txt
+curl-output.json
+.DS_Store

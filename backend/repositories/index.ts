@@ -7,3 +7,4 @@ export * from './DemographicProfileRepository';
 export * from './InfrastructureProfileRepository';
 export * from './ProjectInvestmentRepository';
 export * from './RequestEmbeddingRepository';
+export * from './RecommendationRepository';

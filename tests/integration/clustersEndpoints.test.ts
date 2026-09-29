@@ -84,6 +84,13 @@ async function runTests() {
   );
   console.log('✔ Project Investment context returns matching investment projects when present');
 
+  // Test 4b: Verify non-canonical 3-digit ID (CLU-001) returns 404 (CP-039)
+  console.log('Test 4b: GET /api/v1/clusters/CLU-001 returns 404 (strictly canonical Doc 04 §3 CLU-XXXX)...');
+  const nonCanonRes = await request(app).get('/api/v1/clusters/CLU-001');
+  assert.strictEqual(nonCanonRes.status, 404, '3-digit ID CLU-001 must return 404 NOT_FOUND');
+  assert.strictEqual(nonCanonRes.body.error.code, 'NOT_FOUND');
+  console.log('✔ 3-digit non-canonical ID correctly rejected with 404');
+
   // Test 5: 404 for non-existent cluster
   console.log('Test 5: GET /api/v1/clusters/NON_EXISTENT_ID...');
   const notFoundRes = await request(app).get('/api/v1/clusters/CLU-9999').expect(404);

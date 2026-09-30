@@ -143,3 +143,11 @@ vite.config.ts.timestamp-*
 .vite/
 
 .DS_Store
+
+# Local / IDE / capture artifacts — not for the public repo
+.cursor/
+REC-0001.txt
+curl-output.json
+speech_hero.pcm
+speech_hero.wav
+speech_hero.*

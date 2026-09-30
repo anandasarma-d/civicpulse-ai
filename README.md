@@ -52,7 +52,7 @@ civicpulse-ai/
 ├── prompts/                        # Versioned Gemini templates
 ├── tests/{unit,integration,ai_eval}/
 ├── scripts/                        # seed load, integrity, evidence capture
-├── docs/reports/
+├── docs/architecture/              # system architecture diagram
 ├── .env.example
 ├── server.ts                       # Unified Vite + Express (:3000)
 └── package.json

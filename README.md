@@ -24,6 +24,8 @@ Storage, Secret Manager, Maps Platform + BigQuery GIS, and Cloud Logging
 support the core flow. The three G-flow routes (`/clusters`, `/gaps`,
 `/recommendations`) require the gov demo access key; `/requests` is public.
 
+The full pitch deck is archived at [docs/deck/CivicPulse_AI_Pitch_Deck.pdf](docs/deck/CivicPulse_AI_Pitch_Deck.pdf).
+
 ---
 
 ## Project Structure

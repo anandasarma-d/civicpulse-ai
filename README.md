@@ -10,6 +10,22 @@ Policy Copilot (Contract F) is **not implemented**.
 
 ---
 
+## Architecture
+
+![CivicPulse AI Architecture](docs/architecture/CivicPulse_AI_Architecture_Diagram.png)
+
+Citizen Web App and Government Dashboard clients call a single Cloud Run
+service (`civicpulse-ai`) exposing `/api/v1`. Request, Cluster, Gap/Priority
+and Recommendation services read/write BigQuery (`civicpulse_demo`) and call
+Gemini/Vertex AI for extraction and grounded explanation only — the priority
+score is always calculated deterministically, never by Gemini. Policy Copilot
+is designed and fully specified but not yet built (see note above). Cloud
+Storage, Secret Manager, Maps Platform + BigQuery GIS, and Cloud Logging
+support the core flow. The three G-flow routes (`/clusters`, `/gaps`,
+`/recommendations`) require the gov demo access key; `/requests` is public.
+
+---
+
 ## Project Structure
 
 ```
